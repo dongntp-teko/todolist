@@ -1,0 +1,39 @@
+
+.background-dark{
+    background-color: #444444;
+}
+
+.main{
+    width: 600px;
+    margin: 0 auto;
+}
+
+.form-main{
+    margin-left: 50px;
+}
+
+.text-blue{
+    color: #00CCCC;
+}
+
+
+
+.remove{
+    border-style: none;
+    float: right;
+    opacity: .2;
+    line-height: 1;
+}
+
+
+.btn-default{
+    background-color: white;
+}
+
+.mt-50{
+    margin-top: 50px;
+}
+
+.mt-30{
+    margin-top: 30px;
+}

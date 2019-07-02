@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 //import logo from './logo.svg';
 import './App.css';
 
-var todoItems=[{value: "abc", done: false}, {value:"def", done: true}];
+let todoItems=[{value: "abc", done: false}, {value:"def", done: true}];
 
 function ShowHeader(props){
   return (
@@ -12,78 +12,52 @@ function ShowHeader(props){
   )
 }
 
-class TodoItem extends React.Component{
-  constructor(props){
-    super(props);
-    this.handleRemove=this.handleRemove.bind(this);
-    this.handleChange=this.handleChange.bind(this);
-  }
+function TodoItem(props) {
 
-  handleRemove(){
-    this.props.removeItem(parseInt(this.props.key1));
-    //alert(parseInt(this.props.key1));
-  }
-
-  handleChange(){
-    this.props.markTodo(this.props.key1);
-    //alert(parseInt(this.props.key1));
-  }
-
-  render(){
-    const item = (this.props.item.done) ? (
-      <li class="list-group-item list-group-item-action text-decor">
-        <span onClick={this.handleChange}><i class="fas fa-check"></i></span> {this.props.item.value}
-        <button type="button" onClick={this.handleRemove} class='remove btn btn-default'><i class="fas fa-times"></i></button>         
-      </li>
+  const item = (props.item.done) ? (
+    <li class="list-group-item list-group-item-action text-decor">
+      <span onClick={() => { props.removeItem(parseInt(props.key1)) }}><i class="fas fa-check"></i></span> {props.item.value}
+      <button type="button" onClick={() => { props.markTodo(props.key1) } } class='remove btn btn-default'><i class="fas fa-times"></i></button>         
+    </li>
     ): (
-      <li class="list-group-item list-group-item-action  text-green">
-        <span onClick={this.handleChange}><i class="fas fa-check"></i></span> {this.props.item.value}
-        <button type="button" onClick={this.handleRemove} class='remove btn btn-default'><i class="fas fa-times"></i></button>         
-      </li>
+    <li class="list-group-item list-group-item-action  text-green">
+      <span onClick={() => { props.removeItem(parseInt(props.key1)) }}><i class="fas fa-check"></i></span> {props.item.value}
+      <button type="button" onClick={() => { props.markTodo(props.key1) } } class='remove btn btn-default'><i class="fas fa-times"></i></button>         
+    </li>
     )
-    return item;
-  }
+  return item;
+  
 }
 
-class TodoList extends React.Component{
-  render(){  
-    const listItems=this.props.listItem.map((items, index)=>
-    <TodoItem item={items} key1={index} markTodo={this.props.markTodoDone} removeItem={this.props.removeItem} />
+function TodoList(props){
+  const listItems=props.listItem.map((items, index)=>
+  <TodoItem item={items} key1={index} markTodo={props.markTodoDone} removeItem={props.removeItem} />
   );
-    return(
-      <ul className='list-group'>
-        {listItems}
-      </ul>
-    )
-  }
+  return(
+    <ul className='list-group'>
+      {listItems}
+    </ul>
+  )
+  
 }
 
-class AddTodo extends React.Component{
-  constructor(props){
-    super(props);
-    this.state={value:"", done: false};
-    this.handleChange=this.handleChange.bind(this);
-    this.handleSubmit=this.handleSubmit.bind(this);
-  }
+function AddTodo(props){
+  const [todoItem, setTodoItem] = useState({value: "", done: false});
 
-  handleChange(event){
-    this.setState({value:event.target.value});
-  }
-
-  handleSubmit(event){
-    this.props.addItem(this.state.value);
-    this.setState({value:"", done:false});
-    event.preventDefault();
-  }
-
-  render(){
-    return(
-      <form className='form-main mt-30 form-inline' >
-        <input className='form-control' size='35' type="text" onChange={this.handleChange} value={this.state.value} placeholder="add a new todo..." />
-        <button type='submit' onClick={this.handleSubmit} class='btn btn-default'>Add</button>
-      </form>
-    )
-  }
+  return(
+    <form className='form-main mt-30 form-inline' onSubmit={(e) => {
+      props.addItem(todoItem.value);
+      e.preventDefault();
+    //console.log(todoItems)
+    }} >
+      <input className='form-control' size='35' type="text" onChange={(e) => setTodoItem({
+        value: e.target.value,
+        done: false
+      })} value={todoItem.value} placeholder="add a new todo..." />
+      <button type='submit' class='btn btn-default'>Add</button>
+    </form>
+  )
+  
 }
 
 class ShowContent extends React.Component{
@@ -96,7 +70,7 @@ class ShowContent extends React.Component{
   }
 
   addItem(item){
-    todoItems.unshift({value: item, done: false});
+    if(item) todoItems.unshift({value: item, done: false});
     this.setState({todoItems: todoItems});
   }
 

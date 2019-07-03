@@ -16,13 +16,13 @@ function TodoItem(props) {
 
   const item = (props.item.done) ? (
     <li class="list-group-item list-group-item-action text-decor">
-      <span onClick={() => { props.removeItem(parseInt(props.key1)) }}><i class="fas fa-check"></i></span> {props.item.value}
-      <button type="button" onClick={() => { props.markTodo(props.key1) } } class='remove btn btn-default'><i class="fas fa-times"></i></button>         
+      <span onClick={() => { props.markTodo(parseInt(props.key1)) }}><i class="fas fa-check"></i></span> {props.item.value}
+      <button type="button" onClick={() => { props.removeItem(props.key1) } } class='remove btn btn-default'><i class="fas fa-times"></i></button>         
     </li>
     ): (
     <li class="list-group-item list-group-item-action  text-green">
-      <span onClick={() => { props.removeItem(parseInt(props.key1)) }}><i class="fas fa-check"></i></span> {props.item.value}
-      <button type="button" onClick={() => { props.markTodo(props.key1) } } class='remove btn btn-default'><i class="fas fa-times"></i></button>         
+      <span onClick={() => { props.markTodo(parseInt(props.key1)) }}><i class="fas fa-check"></i></span> {props.item.value}
+      <button type="button" onClick={() => { props.removeItem(props.key1) } } class='remove btn btn-default'><i class="fas fa-times"></i></button>         
     </li>
     )
   return item;

@@ -1,8 +1,8 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { Component, useEffect, useState, useReducer } from 'react';
 //import logo from './logo.svg';
 import './App.css';
 
-let todoItems=[{value: "axy", done: false}, {value:"def", done: true}];
+let todoItems=[{value: "abc", done: false}, {value:"def", done: true}];
 
 function ShowHeader(props){
 
@@ -26,12 +26,12 @@ function TodoItem(props) {
   const item = (props.item.done) ? (
     <li class="list-group-item list-group-item-action text-decor">
       <span onClick={() => { props.markTodo(parseInt(props.key1)) }}><i class="fas fa-check"></i></span> {props.item.value}
-      <button type="button" onClick={() => { props.removeItem(props.key1) } } class='remove btn btn-default'><i class="fas fa-times"></i></button>         
+      <button type="button" onClick={() => { props.removeItem(parseInt(props.key1)) } } class='remove btn btn-default'><i class="fas fa-times"></i></button>         
     </li>
     ): (
     <li class="list-group-item list-group-item-action  text-green">
       <span onClick={() => { props.markTodo(parseInt(props.key1)) }}><i class="fas fa-check"></i></span> {props.item.value}
-      <button type="button" onClick={() => { props.removeItem(props.key1) } } class='remove btn btn-default'><i class="fas fa-times"></i></button>         
+      <button type="button" onClick={() => { props.removeItem(parseInt(props.key1)) } } class='remove btn btn-default'><i class="fas fa-times"></i></button>         
     </li>
     )
   return item;
@@ -56,8 +56,8 @@ function AddTodo(props){
   return(
     <form className='form-main mt-30 form-inline' onSubmit={(e) => {
       props.addItem(todoItem.value);
+      setTodoItem({value: "", done: false});
       e.preventDefault();
-    //console.log(todoItems)
     }} >
       <input className='form-control' size='35' type="text" onChange={(e) => setTodoItem({
         value: e.target.value,
@@ -69,43 +69,34 @@ function AddTodo(props){
   
 }
 
-class ShowContent extends React.Component{
-  constructor(props){
-    super(props);
-    this.addItem=this.addItem.bind(this);
-    this.markTodoDone=this.markTodoDone.bind(this);
-    this.removeItem=this.removeItem.bind(this);
-    this.state={todoItems: todoItems};
+function reducer(state, action){
+  if (action.type==="add"){
+    todoItems.unshift({value: action.item, done: false});
+    return {todoItems: todoItems};
   }
-
-  addItem(item){
-    if(item) todoItems.unshift({value: item, done: false});
-    this.setState({todoItems: todoItems});
+  if (action.type==="delete"){
+    todoItems.splice(action.index,1);
+    return {todoItems: todoItems};
   }
-
-  removeItem(index){
-    todoItems.splice(index,1);
-    this.setState({todoItems: todoItems});
-  
+  if (action.type==="markTodo"){
+    let index=action.index;
+      console.log(index);
+      let don=todoItems[index].done;
+      let val=todoItems[index].value;
+      todoItems.splice(index,1);
+      don ? todoItems.unshift({value: val, done: false}) : todoItems.push({value: val, done: true});
+      return {todoItems: todoItems};
   }
+}
 
-  markTodoDone(index){
-    var don=todoItems[index].done;
-    var val=todoItems[index].value;
-    todoItems.splice(index,1);
-    don ? todoItems.unshift({value: val, done: false}) : todoItems.push({value: val, done: true});
-    this.setState({todoItems: todoItems});
-   // alert(index);
-  }
-
-  render(){
+function ShowContent(props){
+  const [state, dispatch] = useReducer(reducer, {todoItems: props.todoItems});
     return (
       <div>
-        <TodoList listItem={this.props.todoItems} removeItem={this.removeItem} markTodoDone={this.markTodoDone} />
-        <AddTodo addItem={this.addItem}/>
+        <TodoList listItem={props.todoItems} removeItem={(id) => dispatch({type: "delete", index: id})} markTodoDone={(id) => dispatch({type: "markTodo", index: id})} />
+        <AddTodo addItem={(todo) => dispatch({type: "add", item: todo})}/>
       </div>
     )
-  }
 }
 
 

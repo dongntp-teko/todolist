@@ -2,7 +2,7 @@ import React, { Component, useEffect, useState } from 'react';
 //import logo from './logo.svg';
 import './App.css';
 
-let todoItems=[{value: "abc", done: false}, {value:"def", done: true}];
+let todoItems=[{value: "axy", done: false}, {value:"def", done: true}];
 
 function ShowHeader(props){
 

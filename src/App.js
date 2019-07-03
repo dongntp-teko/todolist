@@ -5,9 +5,18 @@ import './App.css';
 let todoItems=[{value: "abc", done: false}, {value:"def", done: true}];
 
 function ShowHeader(props){
+
+  const [time, setTime] = useState(new Date());
+
+  useEffect( () => {
+    const ti = setInterval( () => setTime(new Date()), 1000 );
+    return () => clearInterval(ti);
+  });
+
   return (
-    <div class='text-blue'>
-        <h1>Todo list</h1>
+    <div className="text-blue">
+        <h1 >Todo list</h1>
+        <p>{time.toLocaleTimeString()}</p>
     </div>
   )
 }
@@ -98,6 +107,7 @@ class ShowContent extends React.Component{
     )
   }
 }
+
 
 function App() {
     return (

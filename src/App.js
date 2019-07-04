@@ -1,8 +1,9 @@
-import React, { Component, useEffect, useState, useReducer } from 'react';
+import React, { Component, useEffect, useState, useReducer, useContext } from 'react';
 //import logo from './logo.svg';
 import './App.css';
 
 let todoItems=[{value: "abc", done: false}, {value:"def", done: true}];
+const TodoContext = React.createContext();
 
 function ShowHeader(props){
 
@@ -22,16 +23,17 @@ function ShowHeader(props){
 }
 
 function TodoItem(props) {
+  const context = useContext(TodoContext);
 
   const item = (props.item.done) ? (
     <li class="list-group-item list-group-item-action text-decor">
-      <span onClick={() => { props.markTodo(parseInt(props.key1)) }}><i class="fas fa-check"></i></span> {props.item.value}
-      <button type="button" onClick={() => { props.removeItem(parseInt(props.key1)) } } class='remove btn btn-default'><i class="fas fa-times"></i></button>         
+      <span onClick={() => { context.markTodo(parseInt(props.key1)) }}><i class="fas fa-check"></i></span> {props.item.value}
+      <button type="button" onClick={() => { context.removeItem(parseInt(props.key1)) } } class='remove btn btn-default'><i class="fas fa-times"></i></button>         
     </li>
     ): (
     <li class="list-group-item list-group-item-action  text-green">
-      <span onClick={() => { props.markTodo(parseInt(props.key1)) }}><i class="fas fa-check"></i></span> {props.item.value}
-      <button type="button" onClick={() => { props.removeItem(parseInt(props.key1)) } } class='remove btn btn-default'><i class="fas fa-times"></i></button>         
+      <span onClick={() => { context.markTodo(parseInt(props.key1)) }}><i class="fas fa-check"></i></span> {props.item.value}
+      <button type="button" onClick={() => { context.removeItem(parseInt(props.key1)) } } class='remove btn btn-default'><i class="fas fa-times"></i></button>         
     </li>
     )
   return item;
@@ -40,7 +42,7 @@ function TodoItem(props) {
 
 function TodoList(props){
   const listItems=props.listItem.map((items, index)=>
-  <TodoItem item={items} key1={index} markTodo={props.markTodoDone} removeItem={props.removeItem} />
+  <TodoItem item={items} key1={index} />
   );
   return(
     <ul className='list-group'>
@@ -52,10 +54,11 @@ function TodoList(props){
 
 function AddTodo(props){
   const [todoItem, setTodoItem] = useState({value: "", done: false});
+  const context = useContext(TodoContext);
 
   return(
     <form className='form-main mt-30 form-inline' onSubmit={(e) => {
-      props.addItem(todoItem.value);
+      context.addItem(todoItem.value);
       setTodoItem({value: "", done: false});
       e.preventDefault();
     }} >
@@ -91,10 +94,17 @@ function reducer(state, action){
 
 function ShowContent(props){
   const [state, dispatch] = useReducer(reducer, {todoItems: props.todoItems});
+  const func = {
+    removeItem: (id) => dispatch({type: "delete", index: id}),
+    markTodo: (id) => dispatch({type: "markTodo", index: id}),
+    addItem: (todo) => dispatch({type: "add", item: todo}),
+  }
     return (
       <div>
-        <TodoList listItem={props.todoItems} removeItem={(id) => dispatch({type: "delete", index: id})} markTodoDone={(id) => dispatch({type: "markTodo", index: id})} />
-        <AddTodo addItem={(todo) => dispatch({type: "add", item: todo})}/>
+        <TodoContext.Provider value={func}>
+        <TodoList listItem={props.todoItems} />
+        <AddTodo/>
+        </TodoContext.Provider>
       </div>
     )
 }
